@@ -34,7 +34,7 @@ public class UserService extends BaseModelService<User> {
     }
 
     private void assertFreeEmail(String email) {
-        Optional<User> existedUser = repository.findOneByEmail(email);
+        Optional<User> existedUser = repository.findByEmail(email);
 
         if (existedUser.isPresent()) {
             throwEmailDuplicationException(email);
@@ -45,7 +45,7 @@ public class UserService extends BaseModelService<User> {
             String email,
             Long userId
     ) {
-        Optional<User> existedUser = repository.findOneByEmail(email);
+        Optional<User> existedUser = repository.findByEmail(email);
 
         if (existedUser.isPresent() && !existedUser.get().getId().equals(userId)) {
             throwEmailDuplicationException(email);
@@ -59,5 +59,19 @@ public class UserService extends BaseModelService<User> {
                         email
                 )
         );
+    }
+
+    @Override
+    protected User fill(User source, User target) {
+        target.setName(getValueOrDefault(
+                source.getName(),
+                target.getName()
+        ));
+        target.setEmail(getValueOrDefault(
+                source.getEmail(),
+                target.getEmail()
+        ));
+
+        return target;
     }
 }

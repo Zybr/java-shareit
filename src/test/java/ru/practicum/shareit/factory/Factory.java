@@ -1,8 +1,8 @@
 package ru.practicum.shareit.factory;
 
 import com.github.javafaker.Faker;
+import org.springframework.data.jpa.repository.JpaRepository;
 import ru.practicum.shareit.common.model.Model;
-import ru.practicum.shareit.common.repository.ModelRepository;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -16,9 +16,9 @@ import java.util.List;
  */
 public abstract class Factory<M extends Model> {
     protected final Faker faker = new Faker();
-    protected final ModelRepository<M> repository;
+    protected final JpaRepository<M, Long> repository;
 
-    protected Factory(ModelRepository<M> repository) {
+    protected Factory(JpaRepository<M, Long> repository) {
         this.repository = repository;
     }
 
@@ -31,13 +31,13 @@ public abstract class Factory<M extends Model> {
     }
 
     public M create() {
-        return repository.createOne(
+        return repository.saveAndFlush(
                 make()
         );
     }
 
     public M create(M attributes) {
-        return repository.createOne(
+        return repository.saveAndFlush(
                 make(attributes)
         );
     }

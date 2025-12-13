@@ -49,7 +49,7 @@ public class ItemMapper extends ModelMapper<Item, ItemDto> {
 
     private User getUser(Long id) {
         return userRepository
-                .findOne(id)
+                .findById(id)
                 .orElseThrow(
                         () -> new NotFoundException(
                                 String.format(

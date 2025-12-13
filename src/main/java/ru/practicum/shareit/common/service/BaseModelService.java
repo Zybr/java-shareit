@@ -1,20 +1,20 @@
 package ru.practicum.shareit.common.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.repository.JpaRepository;
 import ru.practicum.shareit.common.exception.NotFoundException;
 import ru.practicum.shareit.common.model.Model;
-import ru.practicum.shareit.common.repository.ModelRepository;
 
 import java.util.List;
 
 @RequiredArgsConstructor
 public abstract class BaseModelService<M extends Model> implements ModelService<M> {
-    protected final ModelRepository<M> repository;
+    protected final JpaRepository<M, Long> repository;
 
     @Override
     public M getOne(Long id) {
         return repository
-                .findOne(id)
+                .findById(id)
                 .orElseThrow(
                         () -> new NotFoundException(
                                 String.format(
@@ -27,26 +27,39 @@ public abstract class BaseModelService<M extends Model> implements ModelService<
 
     @Override
     public boolean isExisted(Long id) {
-        return repository.isExisted(id);
+        return repository.existsById(id);
     }
 
     @Override
     public List<M> findList() {
-        return repository.findList();
+        return repository.findAll();
     }
 
     @Override
     public M createOne(M creation) {
-        return repository.createOne(creation);
+        return repository.saveAndFlush(creation);
     }
 
     @Override
     public M updateOne(M update) {
-        return repository.updateOne(update);
+        return repository.saveAndFlush(
+                fill(
+                        update,
+                        this.getOne(
+                                update.getId()
+                        )
+                )
+        );
     }
 
     @Override
-    public M deleteOne(Long id) {
-        return repository.deleteOne(id);
+    public void deleteOne(Long id) {
+        repository.deleteById(id);
+    }
+
+    protected abstract M fill(M source, M target);
+
+    protected <T> T getValueOrDefault(T value, T defaultValue) {
+        return value == null ? defaultValue : value;
     }
 }

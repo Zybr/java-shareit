@@ -14,15 +14,15 @@ import ru.practicum.shareit.features.user.repository.UserRepository;
 import java.util.List;
 
 @SpringBootTest()
-public class ItemRepositoryMemoryTest extends ModelRepositoryTest<ItemRepositoryMemory, Item> {
+public class ItemRepositoryTest extends ModelRepositoryTest<ItemRepository, Item> {
     @Override
     public ItemFactory getFactory() {
         return (ItemFactory) super.getFactory();
     }
 
 
-    public ItemRepositoryMemoryTest(
-            @Autowired ItemRepositoryMemory repository,
+    public ItemRepositoryTest(
+            @Autowired ItemRepository repository,
             @Autowired UserRepository userRepository
     ) {
         super(
@@ -35,7 +35,7 @@ public class ItemRepositoryMemoryTest extends ModelRepositoryTest<ItemRepository
     }
 
     /**
-     * @see ItemRepository#findListByOwner(Long)
+     * @see ItemRepository#findAllByOwnerId(Long)
      */
     @Test
     public void shouldFinByOwner() {
@@ -51,7 +51,7 @@ public class ItemRepositoryMemoryTest extends ModelRepositoryTest<ItemRepository
 
         Assertions.assertEquals(
                 getRepository()
-                        .findListByOwner(owner.getId())
+                        .findAllByOwnerId(owner.getId())
                         .stream()
                         .map(Item::getId)
                         .toList(),
@@ -63,7 +63,7 @@ public class ItemRepositoryMemoryTest extends ModelRepositoryTest<ItemRepository
     }
 
     /**
-     * @see ItemRepository#findListByOwner(Long, String)
+     * @see ItemRepository#findAllByOwnerIdAndSearchText(Long, String)
      */
     @Test
     public void shouldFinByOwnerAndSearchText() {
@@ -87,7 +87,7 @@ public class ItemRepositoryMemoryTest extends ModelRepositoryTest<ItemRepository
 
         Assertions.assertEquals(
                 getRepository()
-                        .findListByOwner(
+                        .findAllByOwnerIdAndSearchText(
                                 owner.getId(),
                                 searchText
                         )

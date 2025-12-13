@@ -2,6 +2,7 @@ package ru.practicum.shareit.common.mapper;
 
 import ru.practicum.shareit.common.dto.ModelDto;
 import ru.practicum.shareit.common.model.Model;
+import ru.practicum.shareit.features.item.model.Item;
 
 import java.util.List;
 
@@ -25,4 +26,8 @@ public abstract class ModelMapper<M extends Model, D extends ModelDto> {
     }
 
     public abstract M copyModel(M model);
+
+    protected <T> T getValueOrDefault(T value, T defaultValue) {
+        return value == null ? defaultValue : value;
+    }
 }

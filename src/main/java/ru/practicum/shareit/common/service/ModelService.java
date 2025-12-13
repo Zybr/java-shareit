@@ -15,5 +15,5 @@ public interface ModelService<M extends Model> {
 
     M updateOne(M update);
 
-    M deleteOne(Long id);
+    void deleteOne(Long id);
 }
