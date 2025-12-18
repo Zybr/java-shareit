@@ -14,20 +14,20 @@ import java.util.List;
 
 @RestController
 @RequestMapping(path = "/users")
-public class UserController extends ModelController<User, UserDto> {
+public class UserController extends ModelController<User, UserDto, UserDto> {
     private final UserService service;
 
     public UserController(
             UserMapper mapper,
             UserService service
     ) {
-        super(mapper);
+        super(mapper, mapper);
         this.service = service;
     }
 
     @GetMapping
     public List<UserDto> getUsers() {
-        return toDto(
+        return toOutDto(
                 service.findList()
         );
     }
@@ -36,7 +36,7 @@ public class UserController extends ModelController<User, UserDto> {
     public UserDto getUser(
             @PathVariable Long id
     ) {
-        return toDto(
+        return toOutDto(
                 service.getOne(id)
         );
     }
@@ -45,9 +45,9 @@ public class UserController extends ModelController<User, UserDto> {
     public UserDto createUser(
             @RequestBody @Validated(OnCreate.class) UserDto creation
     ) {
-        return toDto(
+        return toOutDto(
                 service.createOne(
-                        toModel(creation)
+                        toInpModel(creation)
                 )
         );
     }
@@ -59,9 +59,9 @@ public class UserController extends ModelController<User, UserDto> {
     ) {
         update.setId(id);
 
-        return toDto(
+        return toOutDto(
                 service.updateOne(
-                        toModel(update)
+                        toInpModel(update)
                 )
         );
     }
