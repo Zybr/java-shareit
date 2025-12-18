@@ -1,4 +1,4 @@
-package ru.practicum.shareit.features.item.dto;
+package ru.practicum.shareit.features.item.dto.item;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -21,7 +21,7 @@ public class ItemDto implements ModelDto {
     @NotNull(groups = OnCreate.class)
     private final Boolean available;
 
-    private Long owner;
+    private Long ownerId;
 
-    private final Long request;
+    private final Long requestId;
 }
