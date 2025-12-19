@@ -1,5 +1,6 @@
 package ru.practicum.shareit.features.item.mapper.comment;
 
+import org.mapstruct.Named;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.common.mapper.ModelProvider;
 import ru.practicum.shareit.features.item.model.Item;
@@ -20,10 +21,12 @@ public class CommentRelationsProvider extends ModelProvider {
         this.userRepository = userRepository;
     }
 
+    @Named("getUser")
     public User getUser(Long id) {
         return getModel(userRepository, id);
     }
 
+    @Named("getItem")
     public Item getItem(Long id) {
         return getModel(itemRepository, id);
     }

@@ -1,26 +1,36 @@
 package ru.practicum.shareit.features.item.mapper.item;
 
-import org.springframework.stereotype.Service;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import ru.practicum.shareit.features.item.dto.item.ItemDetailedOutDto;
 import ru.practicum.shareit.features.item.dto.item.ItemDto;
+import ru.practicum.shareit.features.item.mapper.comment.CommentMapper;
 import ru.practicum.shareit.features.item.model.Item;
 
-@Service
-public class ItemMapper extends BaseItemMapper<ItemDto> {
-    public ItemMapper(ItemRelationsProvider relationsProvider) {
-        super(relationsProvider);
-    }
+import java.util.List;
 
-    @Override
-    public ItemDto toDto(Item item) {
-        ItemDto dto = new ItemDto(
-                item.getName(),
-                item.getDescription(),
-                item.getAvailable(),
-                getEntityId(item.getRequest())
-        );
-        dto.setId(item.getId());
-        dto.setOwnerId(item.getOwner().getId());
+@Mapper(
+        componentModel = "spring",
+        uses = {
+                ItemRelationsProvider.class,
+                CommentMapper.class
+        }
+)
+public abstract class ItemMapper {
+    @Mapping(target = "ownerId", source = "owner.id")
+    @Mapping(target = "requestId", source = "request.id")
+    public abstract ItemDto toDto(Item item);
 
-        return dto;
-    }
+    public abstract List<ItemDto> toDto(List<Item> items);
+
+    @Mapping(target = "owner", source = "ownerId", qualifiedByName = "getUser")
+    @Mapping(target = "request", ignore = true) // TODO: Implement in one of the following sprint
+    public abstract Item toModel(ItemDto dto);
+
+    @Mapping(target = "ownerId", source = "owner.id")
+    @Mapping(target = "requestId", source = "request.id")
+    @Mapping(target = "lastBooking", source = "id", qualifiedByName = "getPreviousBookingTime")
+    @Mapping(target = "nextBooking", source = "id", qualifiedByName = "getNextBookingTime")
+    @Mapping(target = "comments", source = "id", qualifiedByName = "getItemComments")
+    public abstract ItemDetailedOutDto toDetailedDto(Item item);
 }

@@ -2,41 +2,40 @@ package ru.practicum.shareit.features.user.controller;
 
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.common.controller.ModelController;
 import ru.practicum.shareit.common.validation.action.OnCreate;
 import ru.practicum.shareit.common.validation.action.OnPartialUpdate;
 import ru.practicum.shareit.features.user.dto.UserDto;
 import ru.practicum.shareit.features.user.mapper.UserMapper;
-import ru.practicum.shareit.features.user.model.User;
 import ru.practicum.shareit.features.user.service.UserService;
 
 import java.util.List;
 
 @RestController
 @RequestMapping(path = "/users")
-public class UserController extends ModelController<User, UserDto, UserDto> {
+public class UserController {
+    protected final UserMapper mapper;
+
+
     private final UserService service;
 
     public UserController(
             UserMapper mapper,
             UserService service
     ) {
-        super(mapper, mapper);
+        this.mapper = mapper;
         this.service = service;
     }
 
     @GetMapping
     public List<UserDto> getUsers() {
-        return toOutDto(
-                service.findList()
-        );
+        return mapper.toDto(service.findList());
     }
 
     @GetMapping("{id}")
     public UserDto getUser(
             @PathVariable Long id
     ) {
-        return toOutDto(
+        return mapper.toDto(
                 service.getOne(id)
         );
     }
@@ -45,9 +44,9 @@ public class UserController extends ModelController<User, UserDto, UserDto> {
     public UserDto createUser(
             @RequestBody @Validated(OnCreate.class) UserDto creation
     ) {
-        return toOutDto(
+        return mapper.toDto(
                 service.createOne(
-                        toInpModel(creation)
+                        mapper.toModel(creation)
                 )
         );
     }
@@ -59,9 +58,9 @@ public class UserController extends ModelController<User, UserDto, UserDto> {
     ) {
         update.setId(id);
 
-        return toOutDto(
+        return mapper.toDto(
                 service.updateOne(
-                        toInpModel(update)
+                        mapper.toModel(update)
                 )
         );
     }

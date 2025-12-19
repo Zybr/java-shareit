@@ -5,17 +5,13 @@ import jakarta.validation.constraints.Positive;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.common.constants.CustomHeaders;
-import ru.practicum.shareit.common.controller.ModelController;
 import ru.practicum.shareit.common.validation.action.OnCreate;
 import ru.practicum.shareit.common.validation.action.OnPartialUpdate;
 import ru.practicum.shareit.features.item.dto.comment.CommentInpDto;
 import ru.practicum.shareit.features.item.dto.comment.CommentOutDto;
 import ru.practicum.shareit.features.item.dto.item.ItemDto;
-import ru.practicum.shareit.features.item.mapper.comment.CommentInpMapper;
-import ru.practicum.shareit.features.item.mapper.comment.CommentOutMapper;
-import ru.practicum.shareit.features.item.mapper.item.ItemDetailedOutMapper;
+import ru.practicum.shareit.features.item.mapper.comment.CommentMapper;
 import ru.practicum.shareit.features.item.mapper.item.ItemMapper;
-import ru.practicum.shareit.features.item.model.Item;
 import ru.practicum.shareit.features.item.service.CommentService;
 import ru.practicum.shareit.features.item.service.ItemService;
 
@@ -24,37 +20,32 @@ import java.util.List;
 @RestController
 @RequestMapping(path = "/items")
 @Validated
-public class ItemController extends ModelController<Item, ItemDto, ItemDto> {
+public class ItemController {
     private final ItemService itemService;
-    private final ItemDetailedOutMapper outDetailedMapper;
+    private final ItemMapper itemMapper;
 
     private final CommentService commentService;
-    private final CommentInpMapper commentInpMapper;
-    private final CommentOutMapper commentOutMapper;
+    private final CommentMapper commentMapper;
 
     public ItemController(
             ItemService service,
-            ItemMapper mapper,
-            ItemDetailedOutMapper itemOutDetailedMapper,
+            ItemMapper itemMapper,
 
             CommentService commentService,
-            CommentInpMapper commentInpMapper,
-            CommentOutMapper commentOutMapper
+            CommentMapper commentMapper
     ) {
-        super(mapper, mapper);
         this.itemService = service;
-        this.outDetailedMapper = itemOutDetailedMapper;
+        this.itemMapper = itemMapper;
 
         this.commentService = commentService;
-        this.commentInpMapper = commentInpMapper;
-        this.commentOutMapper = commentOutMapper;
+        this.commentMapper = commentMapper;
     }
 
     @GetMapping
     public List<ItemDto> getItems(
             @RequestHeader(CustomHeaders.USER_ID) @Positive Long userId
     ) {
-        return toOutDto(
+        return itemMapper.toDto(
                 itemService.findListByOwner(userId)
         );
     }
@@ -64,7 +55,7 @@ public class ItemController extends ModelController<Item, ItemDto, ItemDto> {
             @RequestHeader(CustomHeaders.USER_ID) @Positive Long userId,
             @RequestParam("text") String searchText
     ) {
-        return toOutDto(
+        return itemMapper.toDto(
                 itemService.findListByOwner(
                         userId,
                         searchText
@@ -76,7 +67,7 @@ public class ItemController extends ModelController<Item, ItemDto, ItemDto> {
     public ItemDto getItem(
             @PathVariable Long id
     ) {
-        return outDetailedMapper.toDto(
+        return itemMapper.toDetailedDto(
                 itemService.getOne(id)
         );
     }
@@ -88,9 +79,9 @@ public class ItemController extends ModelController<Item, ItemDto, ItemDto> {
     ) {
         creation.setOwnerId(userId);
 
-        return toOutDto(
+        return itemMapper.toDto(
                 itemService.createOne(
-                        toInpModel(creation)
+                        itemMapper.toModel(creation)
                 )
         );
     }
@@ -104,9 +95,9 @@ public class ItemController extends ModelController<Item, ItemDto, ItemDto> {
         update.setId(id);
         update.setOwnerId(userId);
 
-        return toOutDto(
+        return itemMapper.toDto(
                 itemService.updateOne(
-                        toInpModel(update)
+                        itemMapper.toModel(update)
                 )
         );
     }
@@ -127,9 +118,9 @@ public class ItemController extends ModelController<Item, ItemDto, ItemDto> {
         creation.setItemId(itemId);
         creation.setAuthorId(userId);
 
-        return commentOutMapper.toDto(
+        return commentMapper.toDto(
                 commentService.createOne(
-                        commentInpMapper.toModel(
+                        commentMapper.toModel(
                                 creation
                         )
                 )

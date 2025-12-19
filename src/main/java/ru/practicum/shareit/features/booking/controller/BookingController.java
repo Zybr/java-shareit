@@ -5,13 +5,11 @@ import jakarta.validation.constraints.Positive;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.common.constants.CustomHeaders;
-import ru.practicum.shareit.common.controller.ModelController;
 import ru.practicum.shareit.common.exception.AccessException;
 import ru.practicum.shareit.common.validation.action.OnCreate;
 import ru.practicum.shareit.features.booking.dto.BookingInpDto;
 import ru.practicum.shareit.features.booking.dto.BookingOutDto;
-import ru.practicum.shareit.features.booking.mapper.BookingInpMapper;
-import ru.practicum.shareit.features.booking.mapper.BookingOutMapper;
+import ru.practicum.shareit.features.booking.mapper.BookingMapper;
 import ru.practicum.shareit.features.booking.model.Booking;
 import ru.practicum.shareit.features.booking.model.BookingState;
 import ru.practicum.shareit.features.booking.model.BookingStatus;
@@ -21,15 +19,15 @@ import java.util.List;
 
 @RestController
 @RequestMapping(path = "/bookings")
-public class BookingController extends ModelController<Booking, BookingInpDto, BookingOutDto> {
+public class BookingController {
     private final BookingService service;
+    private final BookingMapper mapper;
 
     public BookingController(
-            BookingInpMapper inpMapper,
-            BookingOutMapper outMapper,
+            BookingMapper mapper,
             BookingService service
     ) {
-        super(inpMapper, outMapper);
+        this.mapper = mapper;
         this.service = service;
     }
 
@@ -38,7 +36,7 @@ public class BookingController extends ModelController<Booking, BookingInpDto, B
             @PathVariable("id") @Positive Long bookingId,
             @RequestHeader(CustomHeaders.USER_ID) @Positive Long userId
     ) {
-        return toOutDto(
+        return mapper.toOutDto(
                 service.getOneByUser(
                         bookingId,
                         userId
@@ -51,7 +49,7 @@ public class BookingController extends ModelController<Booking, BookingInpDto, B
             @RequestHeader(CustomHeaders.USER_ID) @Positive Long bookerId,
             @RequestParam("state") @Nullable BookingState state
     ) {
-        return toOutDto(
+        return mapper.toOutDto(
                 service.findAllByBooker(
                         bookerId,
                         state
@@ -66,7 +64,7 @@ public class BookingController extends ModelController<Booking, BookingInpDto, B
     ) {
         service.getOne(ownerId); // Assert existing
 
-        return toOutDto(
+        return mapper.toOutDto(
                 service.findAllByItemOwner(
                         ownerId,
                         state
@@ -81,9 +79,9 @@ public class BookingController extends ModelController<Booking, BookingInpDto, B
     ) {
         creation.setBookerId(bookerId);
 
-        return toOutDto(
+        return mapper.toOutDto(
                 service.createOne(
-                        toInpModel(creation)
+                        mapper.toModel(creation)
                 )
         );
     }
@@ -106,7 +104,7 @@ public class BookingController extends ModelController<Booking, BookingInpDto, B
                         : BookingStatus.REJECTED
         );
 
-        return toOutDto(
+        return mapper.toOutDto(
                 service.updateOne(
                         booking
                 )
