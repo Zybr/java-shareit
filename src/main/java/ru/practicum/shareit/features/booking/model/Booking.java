@@ -1,20 +1,45 @@
 package ru.practicum.shareit.features.booking.model;
 
-import lombok.Builder;
-import lombok.Data;
+import jakarta.persistence.*;
+import lombok.*;
+import lombok.experimental.Tolerate;
 import ru.practicum.shareit.common.model.Model;
 import ru.practicum.shareit.features.item.model.Item;
 import ru.practicum.shareit.features.user.model.User;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
-@Data
+@Entity
+@Table(name = "bookings")
+@Getter
+@Setter
 @Builder
+@AllArgsConstructor
 public class Booking implements Model {
+    @Tolerate
+    public Booking() {
+    }
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Setter(AccessLevel.NONE)
     private Long id;
-    private LocalDate start;
-    private LocalDate end;
-    private Item item;
-    private User booker;
+
+    @Column(name = "start_time", nullable = false)
+    private LocalDateTime start;
+
+    @Column(name = "end_time", nullable = false)
+    private LocalDateTime end;
+
+    @Column(nullable = false)
+    @Enumerated
     private BookingStatus status;
+
+    @OneToOne
+    @JoinColumn(name = "item_id")
+    private Item item;
+
+    @OneToOne
+    @JoinColumn(name = "booker_id")
+    private User booker;
 }

@@ -24,7 +24,7 @@ public class UniqueEmailValidator implements ConstraintValidator<UniqueEmail, Us
             return true;
         }
 
-        Optional<User> existedUser = userRepository.findOneByEmail(email);
+        Optional<User> existedUser = userRepository.findByEmail(email);
 
         return existedUser.isEmpty() // Email is unique
                 || existedUser.get().getId().equals(change.getId()); // The user is the same

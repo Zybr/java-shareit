@@ -1,0 +1,30 @@
+server:
+  port: 8080
+
+logging:
+  level:
+    org.springframework.orm.jpa: info
+    org.springframework.transaction: info
+    org.springframework.transaction.interceptor: trace
+    org.springframework.orm.jpa.JpaTransactionManager: debug
+    org.hibernate.SQL: debug
+    org.hibernate.type: trace
+    org.hibernate.type.descriptor.sql: trace
+    org.hibernate.orm.jdbc.bind: trace
+spring:
+  datasource: # DB connection
+    username: "dbuser"
+    password: "12345"
+    url: "jdbc:postgresql://localhost:5432/share"
+    driver-class-name: "org.postgresql.Driver"
+  sql:
+    init:
+      mode: always # Run "schema.sql" constantly
+
+  jpa:
+    hibernate:
+      ddl-auto: none # Stop Hibernate to run schema.sql
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true

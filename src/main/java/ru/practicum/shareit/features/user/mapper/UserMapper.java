@@ -21,9 +21,4 @@ public class UserMapper extends ModelMapper<User, UserDto> {
     public User toModel(UserDto dto) {
         return objectMapper.convertValue(dto, User.class);
     }
-
-    @Override
-    public User copyModel(User model) {
-        return objectMapper.convertValue(model, User.class);
-    }
 }

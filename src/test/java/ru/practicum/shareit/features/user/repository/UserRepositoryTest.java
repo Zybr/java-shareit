@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import ru.practicum.shareit.common.repository.ModelRepositoryTest;
 import ru.practicum.shareit.factory.UserFactory;
 import ru.practicum.shareit.features.user.model.User;
@@ -11,10 +12,11 @@ import ru.practicum.shareit.features.user.model.User;
 import java.util.List;
 
 @SpringBootTest()
-public class UserRepositoryMemoryTest extends ModelRepositoryTest<UserRepositoryMemory, User> {
-    public UserRepositoryMemoryTest(
+@ActiveProfiles("test")
+public class UserRepositoryTest extends ModelRepositoryTest<UserRepository, User> {
+    public UserRepositoryTest(
             @Autowired
-            UserRepositoryMemory repository
+            UserRepository repository
     ) {
         super(
                 repository,
@@ -25,14 +27,14 @@ public class UserRepositoryMemoryTest extends ModelRepositoryTest<UserRepository
     }
 
     /**
-     * @see UserRepository#findOneByEmail(String)
+     * @see UserRepository#findByEmail(String)
      */
     @Test
-    void shouldFindOneByEmail() {
+    void shouldFindByEmail() {
         List<User> users = getFactory().createList(5);
         User targetUser = users.get(2);
 
-        var fetchedUser = getRepository().findOneByEmail(targetUser.getEmail());
+        var fetchedUser = getRepository().findByEmail(targetUser.getEmail());
 
         Assertions.assertTrue(fetchedUser.isPresent());
         Assertions.assertEquals(

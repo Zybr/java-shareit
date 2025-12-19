@@ -2,17 +2,17 @@ package ru.practicum.shareit.factory;
 
 
 import lombok.Getter;
-import ru.practicum.shareit.common.repository.ModelRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 import ru.practicum.shareit.features.item.model.Item;
 
 
 public class ItemFactory extends Factory<Item> {
-    protected final ModelRepository<Item> repository;
+    protected final JpaRepository<Item, Long> repository;
     @Getter
     private final UserFactory userFactory;
 
     public ItemFactory(
-            ModelRepository<Item> repository,
+            JpaRepository<Item, Long> repository,
             UserFactory userFactory
     ) {
         super(repository);
@@ -21,8 +21,7 @@ public class ItemFactory extends Factory<Item> {
     }
 
     public Item make(Item attributes) {
-        return Item
-                .builder()
+        return Item.builder()
                 .id(getValueOrDefault(
                         attributes != null ? attributes.getId() : null,
                         makeId()
@@ -41,7 +40,7 @@ public class ItemFactory extends Factory<Item> {
                 ))
                 .owner(getValueOrDefault(
                         attributes != null ? attributes.getOwner() : null,
-                        userFactory.make()
+                        userFactory.create()
                 ))
                 .build();
     }
@@ -50,6 +49,6 @@ public class ItemFactory extends Factory<Item> {
         Item item = make();
         item.setOwner(userFactory.create());
 
-        return repository.createOne(make());
+        return repository.saveAndFlush(make());
     }
 }

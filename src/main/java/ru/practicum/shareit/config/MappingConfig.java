@@ -10,8 +10,7 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 public class MappingConfig {
     @Bean
     public ObjectMapper objectMapper(Jackson2ObjectMapperBuilder builder) {
-        return builder
-                .build()
+        return builder.build()
                 .configure(
                         DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
                         false
