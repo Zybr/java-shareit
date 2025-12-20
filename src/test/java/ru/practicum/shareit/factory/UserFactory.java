@@ -1,21 +1,20 @@
 package ru.practicum.shareit.factory;
 
 
-import ru.practicum.shareit.common.repository.ModelRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 import ru.practicum.shareit.features.user.model.User;
 
 
 public class UserFactory extends Factory<User> {
-    protected final ModelRepository<User> repository;
+    protected final JpaRepository<User, Long> repository;
 
-    public UserFactory(ModelRepository<User> repository) {
+    public UserFactory(JpaRepository<User, Long> repository) {
         super(repository);
         this.repository = repository;
     }
 
     public User make(User attributes) {
-        return User
-                .builder()
+        return User.builder()
                 .id(getValueOrDefault(
                         attributes != null ? attributes.getId() : null,
                         makeId()

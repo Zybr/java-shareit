@@ -17,13 +17,39 @@ public class ItemService extends BaseModelService<Item> {
     }
 
     public List<Item> findListByOwner(Long ownerId) {
-        return repository.findListByOwner(ownerId);
+        return repository.findAllByOwnerId(ownerId);
     }
 
     public List<Item> findListByOwner(
             Long ownerId,
             String searchText
     ) {
-        return repository.findListByOwner(ownerId, searchText);
+        return repository.findAllByOwnerIdAndSearchText(ownerId, searchText);
+    }
+
+    @Override
+    protected Item fill(Item source, Item target) {
+        target.setName(getValueOrDefault(
+                source.getName(),
+                target.getName()
+        ));
+        target.setDescription(getValueOrDefault(
+                source.getDescription(),
+                target.getDescription()
+        ));
+        target.setAvailable(getValueOrDefault(
+                source.getAvailable(),
+                target.getAvailable()
+        ));
+        target.setOwner(getValueOrDefault(
+                source.getOwner(),
+                target.getOwner()
+        ));
+        target.setRequest(getValueOrDefault(
+                source.getRequest(),
+                target.getRequest()
+        ));
+
+        return target;
     }
 }
