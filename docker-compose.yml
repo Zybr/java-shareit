@@ -1,13 +1,29 @@
 services:
-  db:
+  share-db-dev:
     image: postgres:16.1
-    container_name: db
+    container_name: share-db-dev
     ports:
       - "5432:5432"
     volumes:
-      - ./volumes/postgres:/var/lib/postgresql/data/
+      - ./volumes/postgres/dev:/var/lib/postgresql/data/
     environment:
       - POSTGRES_DB=share
+      - POSTGRES_USER=dbuser
+      - POSTGRES_PASSWORD=12345
+    healthcheck:
+      test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
+      timeout: 5s
+      interval: 5s
+      retries: 10
+  share-db-test:
+    image: postgres:16.1
+    container_name: share-db-test
+    ports:
+      - "5433:5432"
+    volumes:
+      - ./volumes/postgres/test:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_DB=test
       - POSTGRES_USER=dbuser
       - POSTGRES_PASSWORD=12345
     healthcheck:
