@@ -12,7 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.test.context.ActiveProfiles;
 import ru.practicum.shareit.common.model.Model;
-import ru.practicum.shareit.factory.Factory;
+import ru.practicum.shareit.factory.ModelFactory;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,7 +26,7 @@ public abstract class ModelRepositoryTest<R extends JpaRepository<M, Long>, M ex
     @Getter
     private final R repository;
     @Getter
-    private final Factory<M> factory;
+    private final ModelFactory<M> factory;
 
     @BeforeEach
     protected void clean() {

@@ -1,11 +1,12 @@
-package ru.practicum.shareit.factory;
+package ru.practicum.shareit.factory.user;
 
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import ru.practicum.shareit.factory.ModelFactory;
 import ru.practicum.shareit.features.user.model.User;
 
 
-public class UserFactory extends Factory<User> {
+public class UserFactory extends ModelFactory<User> {
     protected final JpaRepository<User, Long> repository;
 
     public UserFactory(JpaRepository<User, Long> repository) {

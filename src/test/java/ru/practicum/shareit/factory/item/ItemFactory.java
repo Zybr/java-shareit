@@ -1,12 +1,14 @@
-package ru.practicum.shareit.factory;
+package ru.practicum.shareit.factory.item;
 
 
 import lombok.Getter;
 import org.springframework.data.jpa.repository.JpaRepository;
+import ru.practicum.shareit.factory.ModelFactory;
+import ru.practicum.shareit.factory.user.UserFactory;
 import ru.practicum.shareit.features.item.model.Item;
 
 
-public class ItemFactory extends Factory<Item> {
+public class ItemFactory extends ModelFactory<Item> {
     protected final JpaRepository<Item, Long> repository;
     @Getter
     private final UserFactory userFactory;

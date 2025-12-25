@@ -15,7 +15,6 @@ import java.util.List;
 public class UserController {
     protected final UserMapper mapper;
 
-
     private final UserService service;
 
     public UserController(

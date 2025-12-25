@@ -9,7 +9,7 @@ import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfigurat
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import ru.practicum.shareit.config.PersistenceConfig;
-import ru.practicum.shareit.factory.UserFactory;
+import ru.practicum.shareit.factory.user.UserFactory;
 import ru.practicum.shareit.features.user.model.User;
 import ru.practicum.shareit.features.user.repository.UserRepository;
 

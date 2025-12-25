@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import ru.practicum.shareit.common.repository.ModelRepositoryTest;
-import ru.practicum.shareit.factory.UserFactory;
+import ru.practicum.shareit.factory.user.UserFactory;
 import ru.practicum.shareit.features.user.model.User;
 
 import java.util.List;
