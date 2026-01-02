@@ -35,4 +35,6 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     Optional<Item> findOneAvailableById(
             @Param("id") Long id
     );
+
+    List<Item> findAllByRequestId(Long requestId);
 }

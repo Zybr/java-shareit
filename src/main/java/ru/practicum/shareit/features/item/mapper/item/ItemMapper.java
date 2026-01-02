@@ -24,7 +24,7 @@ public abstract class ItemMapper {
     public abstract List<ItemDto> toDto(List<Item> items);
 
     @Mapping(target = "owner", source = "ownerId", qualifiedByName = "getUser")
-    @Mapping(target = "request", ignore = true) // TODO: Implement in one of the following sprint
+    @Mapping(target = "request", source = "requestId", qualifiedByName = "getRequest")
     public abstract Item toModel(ItemDto dto);
 
     @Mapping(target = "ownerId", source = "owner.id")
