@@ -11,7 +11,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import ru.practicum.shareit.factory.user.UserDtoFactory;
-import ru.practicum.shareit.factory.user.UserFactory;
 import ru.practicum.shareit.features.user.dto.UserDto;
 import ru.practicum.shareit.features.user.mapper.UserMapper;
 import ru.practicum.shareit.features.user.model.User;
