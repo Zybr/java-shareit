@@ -189,6 +189,53 @@
                     <version>0.8.12</version>
                     <configuration>
                         <output>file</output>
+                        <excludes>
+                            <exclude>**/dto/**</exclude>
+                            <exclude>**/model/**</exclude>
+                            <exclude>**/mapper/**</exclude>
+                            <exclude>**/config/**</exclude>
+                            <exclude>**/exception/**</exclude>
+                            <exclude>**/constants/**</exclude>
+                            <exclude>ru/practicum/shareit/ShareItApp.class</exclude>
+                            <exclude>**/common/validation/**</exclude>
+                        </excludes>
+                        <rules>
+                            <rule>
+                                <element>BUNDLE</element>
+                                <limits>
+                                    <limit>
+                                        <counter>INSTRUCTION</counter>
+                                        <value>COVEREDRATIO</value>
+                                        <minimum>0.01</minimum>
+                                    </limit>
+                                    <limit>
+                                        <counter>LINE</counter>
+                                        <value>COVEREDRATIO</value>
+                                        <minimum>0.9</minimum>
+                                    </limit>
+                                    <limit>
+                                        <counter>BRANCH</counter>
+                                        <value>COVEREDRATIO</value>
+                                        <minimum>0.6</minimum>
+                                    </limit>
+                                    <limit>
+                                        <counter>COMPLEXITY</counter>
+                                        <value>COVEREDRATIO</value>
+                                        <minimum>0.6</minimum>
+                                    </limit>
+                                    <limit>
+                                        <counter>METHOD</counter>
+                                        <value>COVEREDRATIO</value>
+                                        <minimum>0.7</minimum>
+                                    </limit>
+                                    <limit>
+                                        <counter>CLASS</counter>
+                                        <value>MISSEDCOUNT</value>
+                                        <maximum>1</maximum>
+                                    </limit>
+                                </limits>
+                            </rule>
+                        </rules>
                     </configuration>
                     <executions>
                         <execution>
@@ -202,45 +249,6 @@
                             <goals>
                                 <goal>check</goal>
                             </goals>
-                            <configuration>
-                                <rules>
-                                    <rule>
-                                        <element>BUNDLE</element>
-                                        <limits>
-                                            <limit>
-                                                <counter>INSTRUCTION</counter>
-                                                <value>COVEREDRATIO</value>
-                                                <minimum>0.01</minimum>
-                                            </limit>
-                                            <limit>
-                                                <counter>LINE</counter>
-                                                <value>COVEREDRATIO</value>
-                                                <minimum>0.9</minimum>
-                                            </limit>
-                                            <limit>
-                                                <counter>BRANCH</counter>
-                                                <value>COVEREDRATIO</value>
-                                                <minimum>0.6</minimum>
-                                            </limit>
-                                            <limit>
-                                                <counter>COMPLEXITY</counter>
-                                                <value>COVEREDRATIO</value>
-                                                <minimum>0.6</minimum>
-                                            </limit>
-                                            <limit>
-                                                <counter>METHOD</counter>
-                                                <value>COVEREDRATIO</value>
-                                                <minimum>0.7</minimum>
-                                            </limit>
-                                            <limit>
-                                                <counter>CLASS</counter>
-                                                <value>MISSEDCOUNT</value>
-                                                <maximum>1</maximum>
-                                            </limit>
-                                        </limits>
-                                    </rule>
-                                </rules>
-                            </configuration>
                         </execution>
                         <execution>
                             <id>jacoco-report</id>

@@ -15,7 +15,7 @@ import java.util.List;
 
 @Service
 public class BookingService extends BaseModelService<Booking> {
-    protected BookingRepository repository;
+    protected final BookingRepository repository;
     private final ItemRepository itemRepository;
 
     public BookingService(

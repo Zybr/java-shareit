@@ -10,7 +10,7 @@ import java.util.Optional;
 
 @Service
 public class UserService extends BaseModelService<User> {
-    protected final UserRepository repository;
+    private final UserRepository repository;
 
     public UserService(UserRepository repository) {
         super(repository);

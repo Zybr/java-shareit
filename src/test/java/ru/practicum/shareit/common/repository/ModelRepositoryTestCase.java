@@ -2,44 +2,30 @@ package ru.practicum.shareit.common.repository;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.test.context.ActiveProfiles;
 import ru.practicum.shareit.common.model.Model;
+import ru.practicum.shareit.database.DbTestCase;
 import ru.practicum.shareit.factory.ModelFactory;
 
 import java.util.List;
 import java.util.Optional;
 
-@SpringBootTest
 @ActiveProfiles("test")
-@RequiredArgsConstructor
-public abstract class ModelRepositoryTest<R extends JpaRepository<M, Long>, M extends Model> {
+public abstract class ModelRepositoryTestCase<R extends JpaRepository<M, Long>, M extends Model> extends DbTestCase {
     @Autowired
     private ObjectMapper mapper;
-    @Getter
-    private final R repository;
-    @Getter
-    private final ModelFactory<M> factory;
 
-    @BeforeEach
-    protected void clean() {
-        repository.findAll()
-                .forEach(
-                        model -> repository
-                                .deleteById(model.getId())
-                );
-    }
+    protected abstract R repository();
+
+    protected abstract ModelFactory<M> factory();
 
     @Test
     public void shouldCreateModel() {
-        M createdModel = factory.create();
+        M createdModel = factory().create();
 
         assertStoredModel(createdModel);
         assertModelListSize(1);
@@ -47,11 +33,11 @@ public abstract class ModelRepositoryTest<R extends JpaRepository<M, Long>, M ex
 
     @Test
     public void shouldUpdateOne() {
-        M createdModel = factory.create();
+        M createdModel = factory().create();
 
-        M update = factory.make(createdModel);
+        M update = factory().make(createdModel);
 
-        assertStoredModel(repository.saveAndFlush(update));
+        assertStoredModel(repository().saveAndFlush(update));
         assertStoredModel(update);
         assertModelListSize(1);
     }
@@ -59,13 +45,13 @@ public abstract class ModelRepositoryTest<R extends JpaRepository<M, Long>, M ex
     @Test
     public void shouldCheckIfExisted() {
         Assertions.assertFalse(
-                repository.existsById(1L)
+                repository().existsById(1L)
         );
 
-        M createdModel = factory.create();
+        M createdModel = factory().create();
 
         Assertions.assertTrue(
-                repository.existsById(
+                repository().existsById(
                         createdModel.getId()
                 )
         );
@@ -74,13 +60,13 @@ public abstract class ModelRepositoryTest<R extends JpaRepository<M, Long>, M ex
     @Test
     public void shouldFindOne() {
         Assertions.assertFalse(
-                repository
+                repository()
                         .findById(1L)
                         .isPresent()
         );
 
-        M createdModel = factory.create();
-        Optional<M> fetchedModel = repository.findById(createdModel.getId());
+        M createdModel = factory().create();
+        Optional<M> fetchedModel = repository().findById(createdModel.getId());
 
         Assertions.assertTrue(fetchedModel.isPresent());
         assertEqualModels(
@@ -93,14 +79,14 @@ public abstract class ModelRepositoryTest<R extends JpaRepository<M, Long>, M ex
     public void shouldFindList() {
         assertModelListSize(0);
 
-        M createdModelA = factory.create();
-        M createdModelB = factory.create();
+        M createdModelA = factory().create();
+        M createdModelB = factory().create();
 
         assertModelListSize(2);
         assertStoredModel(createdModelA);
         assertStoredModel(createdModelB);
 
-        List<M> fetchedModels = repository.findAll();
+        List<M> fetchedModels = repository().findAll();
         assertEqualModels(
                 createdModelA,
                 fetchedModels.get(0)
@@ -114,7 +100,7 @@ public abstract class ModelRepositoryTest<R extends JpaRepository<M, Long>, M ex
     private void assertStoredModel(M storedModel) {
         // Fetch a certain Model
 
-        Optional<M> fetchedModel = repository.findById(storedModel.getId());
+        Optional<M> fetchedModel = repository().findById(storedModel.getId());
         Assertions.assertTrue(fetchedModel.isPresent());
 
         assertEqualModels(
@@ -124,7 +110,7 @@ public abstract class ModelRepositoryTest<R extends JpaRepository<M, Long>, M ex
 
         // Fetch all Models
 
-        Optional<M> fetchedFromList = repository.findAll()
+        Optional<M> fetchedFromList = repository().findAll()
                 .stream().filter(model -> model.getId().equals(storedModel.getId()))
                 .findFirst();
         Assertions.assertTrue(fetchedFromList.isPresent());
@@ -148,7 +134,7 @@ public abstract class ModelRepositoryTest<R extends JpaRepository<M, Long>, M ex
     private void assertModelListSize(int expectedSize) {
         Assertions.assertEquals(
                 expectedSize,
-                repository.findAll().size()
+                repository().findAll().size()
         );
     }
 }

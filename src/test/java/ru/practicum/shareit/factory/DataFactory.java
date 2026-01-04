@@ -1,7 +1,6 @@
 package ru.practicum.shareit.factory;
 
 import com.github.javafaker.Faker;
-import ru.practicum.shareit.common.model.IdGetterOwner;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -9,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public abstract class DataFactory<D extends IdGetterOwner> {
+public abstract class DataFactory<D extends Object> {
     protected final Faker faker = new Faker();
 
     // Data makers >>>

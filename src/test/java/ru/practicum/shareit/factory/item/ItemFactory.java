@@ -1,56 +1,38 @@
 package ru.practicum.shareit.factory.item;
 
 
-import lombok.Getter;
-import org.springframework.data.jpa.repository.JpaRepository;
+import ru.practicum.shareit.database.providers.FactoryProvider;
 import ru.practicum.shareit.factory.ModelFactory;
-import ru.practicum.shareit.factory.user.UserFactory;
 import ru.practicum.shareit.features.item.model.Item;
 
 
 public class ItemFactory extends ModelFactory<Item> {
-    protected final JpaRepository<Item, Long> repository;
-    @Getter
-    private final UserFactory userFactory;
+    private final FactoryProvider factories;
 
-    public ItemFactory(
-            JpaRepository<Item, Long> repository,
-            UserFactory userFactory
-    ) {
-        super(repository);
-        this.repository = repository;
-        this.userFactory = userFactory;
+    public ItemFactory(FactoryProvider factories) {
+        super(factories.repositories().item());
+        this.factories = factories;
     }
 
+    @Override
     public Item make(Item attributes) {
+        attributes = attributes != null ? attributes : new Item();
         return Item.builder()
-                .id(getValueOrDefault(
-                        attributes != null ? attributes.getId() : null,
-                        makeId()
-                ))
-                .name(getValueOrDefault(
-                        attributes != null ? attributes.getName() : null,
-                        makeUniqueWord()
-                ))
-                .description(getValueOrDefault(
-                        attributes != null ? attributes.getDescription() : null,
-                        makeUniqueWord()
-                ))
-                .available(getValueOrDefault(
-                        attributes != null ? attributes.getAvailable() : null,
-                        true
-                ))
-                .owner(getValueOrDefault(
-                        attributes != null ? attributes.getOwner() : null,
-                        userFactory.create()
-                ))
+                .id(getValueOrDefault(attributes.getId(), makeId()))
+                .name(getValueOrDefault(attributes.getName(), makeUniqueWord()))
+                .description(getValueOrDefault(attributes.getDescription(), makeUniqueWord()))
+                .available(getValueOrDefault(attributes.getAvailable(), true))
+                .owner(getValueOrDefault(attributes.getOwner(), factories.user().make()))
                 .build();
     }
 
-    public Item create() {
-        Item item = make();
-        item.setOwner(userFactory.create());
+    @Override
+    public Item create(Item attributes) {
+        attributes = attributes != null ? attributes : new Item();
 
-        return repository.saveAndFlush(make());
+        Item model = make(attributes);
+        model.setOwner(getValueOrDefault(attributes.getOwner(), factories.user().create()));
+
+        return repository.saveAndFlush(model);
     }
 }

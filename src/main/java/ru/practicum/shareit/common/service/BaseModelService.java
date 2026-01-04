@@ -23,7 +23,7 @@ public abstract class BaseModelService<M extends Model> implements ModelService<
                 .orElseThrow(
                         () -> new NotFoundException(
                                 String.format(
-                                        "User \"%d\" not found",
+                                        "Entity \"%d\" not found",
                                         id
                                 )
                         )

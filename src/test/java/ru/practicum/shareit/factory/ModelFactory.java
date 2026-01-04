@@ -12,16 +12,15 @@ public abstract class ModelFactory<M extends Model> extends DataFactory<M> {
         this.repository = repository;
     }
 
-    public M create() {
-        return repository.saveAndFlush(
-                make()
-        );
+    public M create(M attributes) {
+        return repository
+                .saveAndFlush(
+                        make(attributes)
+                );
     }
 
-    public M create(M attributes) {
-        return repository.saveAndFlush(
-                make(attributes)
-        );
+    public M create() {
+        return create(null);
     }
 
     public List<M> createList() {

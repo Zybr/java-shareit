@@ -1,38 +1,29 @@
 package ru.practicum.shareit.features.user.service;
 
-import lombok.RequiredArgsConstructor;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
-import ru.practicum.shareit.config.PersistenceConfig;
-import ru.practicum.shareit.factory.user.UserFactory;
+import ru.practicum.shareit.common.exception.DuplicationException;
+import ru.practicum.shareit.common.exception.NotFoundException;
+import ru.practicum.shareit.database.DbTestCase;
 import ru.practicum.shareit.features.user.model.User;
-import ru.practicum.shareit.features.user.repository.UserRepository;
+
+import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@SpringBootTest
 @ActiveProfiles("test")
-@SpringJUnitConfig(classes = {
-        UserService.class,
-        PersistenceConfig.class,
-        DataSourceAutoConfiguration.class,
-        HibernateJpaAutoConfiguration.class
-})
-@EntityScan(basePackages = "ru.practicum.shareit")
-public class UserServiceTest {
-    private final UserRepository repository;
-    private UserFactory factory;
-    private final UserService service;
+public class UserServiceTest extends DbTestCase {
+    @Autowired
+    private UserService service;
 
     @Test
     void testCreateOne() {
-        User creation = getUserFactory().make();
+        User creation = factories().user().make();
 
         User createdUser = service.createOne(creation);
         User fetchedUser = service.getOne(createdUser.getId());
@@ -43,11 +34,61 @@ public class UserServiceTest {
         );
     }
 
-    private UserFactory getUserFactory() {
-        if (factory == null) {
-            factory = new UserFactory(repository);
-        }
+    @Test
+    void testCreateOneWithDuplicateEmail() {
+        User user1 = factories().user().create();
+        User user2 = factories().user().make();
+        user2.setEmail(user1.getEmail());
 
-        return factory;
+        Assertions.assertThrows(DuplicationException.class, () -> service.createOne(user2));
+    }
+
+    @Test
+    void testUpdateOne() {
+        User user = factories().user().create();
+        User update = User.builder()
+                .id(user.getId())
+                .name("New Name")
+                .build();
+
+        User updated = service.updateOne(update);
+
+        assertThat(updated.getName(), equalTo("New Name"));
+        assertThat(updated.getEmail(), equalTo(user.getEmail()));
+    }
+
+    @Test
+    void testUpdateOneWithDuplicateEmail() {
+        User user1 = factories().user().create();
+        User user2 = factories().user().create();
+        User update = User.builder()
+                .id(user2.getId())
+                .email(user1.getEmail())
+                .build();
+
+        Assertions.assertThrows(DuplicationException.class, () -> service.updateOne(update));
+    }
+
+    @Test
+    void testGetOneNotFound() {
+        Assertions.assertThrows(NotFoundException.class, () -> service.getOne(999L));
+    }
+
+    @Test
+    void testFindList() {
+        factories().user().createList(3);
+
+        List<User> users = service.findList();
+
+        assertThat(users.size(), equalTo(3));
+    }
+
+    @Test
+    void testDeleteOne() {
+        User user = factories().user().create();
+
+        service.deleteOne(user.getId());
+
+        Assertions.assertThrows(NotFoundException.class, () -> service.getOne(user.getId()));
     }
 }

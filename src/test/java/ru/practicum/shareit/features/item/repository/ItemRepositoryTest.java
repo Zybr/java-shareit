@@ -2,38 +2,26 @@ package ru.practicum.shareit.features.item.repository;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import ru.practicum.shareit.common.repository.ModelRepositoryTest;
+import ru.practicum.shareit.common.repository.ModelRepositoryTestCase;
 import ru.practicum.shareit.factory.item.ItemFactory;
-import ru.practicum.shareit.factory.user.UserFactory;
 import ru.practicum.shareit.features.item.model.Item;
 import ru.practicum.shareit.features.user.model.User;
-import ru.practicum.shareit.features.user.repository.UserRepository;
 
 import java.util.List;
 
-@SpringBootTest()
+@SpringBootTest
 @ActiveProfiles("test")
-public class ItemRepositoryTest extends ModelRepositoryTest<ItemRepository, Item> {
+public class ItemRepositoryTest extends ModelRepositoryTestCase<ItemRepository, Item> {
     @Override
-    public ItemFactory getFactory() {
-        return (ItemFactory) super.getFactory();
+    protected ItemRepository repository() {
+        return factories().repositories().item();
     }
 
-
-    public ItemRepositoryTest(
-            @Autowired ItemRepository repository,
-            @Autowired UserRepository userRepository
-    ) {
-        super(
-                repository,
-                new ItemFactory(
-                        repository,
-                        new UserFactory(userRepository)
-                )
-        );
+    @Override
+    protected ItemFactory factory() {
+        return factories().item();
     }
 
     /**
@@ -41,18 +29,18 @@ public class ItemRepositoryTest extends ModelRepositoryTest<ItemRepository, Item
      */
     @Test
     public void shouldFinByOwner() {
-        List<Item> items = getFactory().createList(5);
-        User owner = getFactory().getUserFactory().create();
+        List<Item> items = factory().createList(5);
+        User owner = factories().user().create();
         Item itemTemplate = Item.builder().owner(owner).build();
         List<Item> ownerItems = List.of(
-                getFactory().create(itemTemplate),
-                getFactory().create(itemTemplate),
-                getFactory().create(itemTemplate)
+                factory().create(itemTemplate),
+                factory().create(itemTemplate),
+                factory().create(itemTemplate)
         );
         items.addAll(ownerItems);
 
         Assertions.assertEquals(
-                getRepository()
+                repository()
                         .findAllByOwnerId(owner.getId())
                         .stream()
                         .map(Item::getId)
@@ -69,11 +57,11 @@ public class ItemRepositoryTest extends ModelRepositoryTest<ItemRepository, Item
      */
     @Test
     public void shouldFinByOwnerAndSearchText() {
-        List<Item> items = getFactory().createList(5);
-        User owner = getFactory().getUserFactory().create();
+        List<Item> items = factory().createList(5);
+        User owner = factories().user().create();
         String searchText = "target";
         Item itemTemplate = Item.builder().owner(owner).build();
-        Item targetItemTemplate = getFactory()
+        Item targetItemTemplate = factory()
                 .create(
                         Item.builder()
                                 .owner(owner)
@@ -81,14 +69,14 @@ public class ItemRepositoryTest extends ModelRepositoryTest<ItemRepository, Item
                                 .build()
                 );
         List<Item> ownerItems = List.of(
-                getFactory().create(itemTemplate),
-                getFactory().create(itemTemplate),
-                getFactory().create(itemTemplate)
+                factory().create(itemTemplate),
+                factory().create(itemTemplate),
+                factory().create(itemTemplate)
         );
         items.addAll(ownerItems);
 
         Assertions.assertEquals(
-                getRepository()
+                repository()
                         .findAllByOwnerIdAndSearchText(
                                 owner.getId(),
                                 searchText

@@ -1,74 +1,101 @@
 package ru.practicum.shareit.features.user.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import ru.practicum.shareit.factory.user.UserDtoFactory;
+import ru.practicum.shareit.database.DbTestCase;
 import ru.practicum.shareit.features.user.dto.UserDto;
-import ru.practicum.shareit.features.user.mapper.UserMapper;
 import ru.practicum.shareit.features.user.model.User;
-import ru.practicum.shareit.features.user.service.UserService;
 
 import java.nio.charset.StandardCharsets;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.hamcrest.Matchers.hasSize;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ExtendWith(MockitoExtension.class)
-
-public class UserControllerTest {
-    @Mock
-    private UserService userService;
-    @Mock
-    private UserMapper userMapper;
-    @InjectMocks
-    private UserController controller;
-    private final ObjectMapper mapper = new ObjectMapper();
-    private final UserDtoFactory userDtoFactory = new UserDtoFactory();
+@SpringBootTest
+@AutoConfigureMockMvc
+@ActiveProfiles("test")
+public class UserControllerTest extends DbTestCase {
+    @Autowired
+    private ObjectMapper mapper;
+    @Autowired
     private MockMvc mvc;
 
-    @BeforeEach
-    void setUp() {
-        mvc = MockMvcBuilders
-                .standaloneSetup(controller)
-                .build();
+    @Test
+    public void getUsers() throws Exception {
+        User user = factories().user().create();
+
+        mvc.perform(
+                        get("/users")
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[0].id").value(user.getId()))
+                .andExpect(jsonPath("$[0].name").value(user.getName()))
+                .andExpect(jsonPath("$[0].email").value(user.getEmail()));
+    }
+
+    @Test
+    public void getUser() throws Exception {
+        User user = factories().user().create();
+
+        mvc.perform(
+                        get("/users/" + user.getId())
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(user.getId()))
+                .andExpect(jsonPath("$.name").value(user.getName()))
+                .andExpect(jsonPath("$.email").value(user.getEmail()));
     }
 
     @Test
     public void createUser() throws Exception {
-        UserDto dto = userDtoFactory.make();
-        User model = User.builder().build();
+        UserDto dto = factories().userDto().make();
+        dto.setId(null);
 
-        when(userMapper.toModel(any(UserDto.class)))
-                .thenReturn(model);
-        when(userService.createOne(any(User.class)))
-                .thenReturn(model);
-        when(userMapper.toDto(any(User.class)))
-                .thenReturn(dto);
         mvc.perform(
                         post("/users")
-                                .content(
-                                        mapper.writeValueAsString(
-                                                userDtoFactory.make()
-                                        )
-                                )
+                                .content(mapper.writeValueAsString(dto))
                                 .characterEncoding(StandardCharsets.UTF_8)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(dto.getId()))
+                .andExpect(jsonPath("$.id").exists())
                 .andExpect(jsonPath("$.name").value(dto.getName()))
                 .andExpect(jsonPath("$.email").value(dto.getEmail()));
+    }
+
+    @Test
+    public void updateUser() throws Exception {
+        User user = factories().user().create();
+        UserDto updateDto = new UserDto("Updated Name", "updated@email.com");
+
+        mvc.perform(
+                        patch("/users/" + user.getId())
+                                .content(mapper.writeValueAsString(updateDto))
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(user.getId()))
+                .andExpect(jsonPath("$.name").value(updateDto.getName()))
+                .andExpect(jsonPath("$.email").value(updateDto.getEmail()));
+    }
+
+    @Test
+    public void deleteUser() throws Exception {
+        User user = factories().user().create();
+
+        mvc.perform(delete("/users/" + user.getId()))
+                .andExpect(status().isOk());
+
+        assert !factories().repositories().user().existsById(user.getId());
     }
 }
