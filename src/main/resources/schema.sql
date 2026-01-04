@@ -18,8 +18,9 @@ create table users
 create table requests
 (
     id           bigint generated always as identity primary key,
-    description  varchar(255) not null check (btrim(description) <> ''),
-    requestor_id bigint       not null references users (id) on delete cascade
+    description  varchar(255)                not null check (btrim(description) <> ''),
+    requester_id bigint                      not null references users (id) on delete cascade,
+    created_at   timestamp without time zone not null default current_timestamp
 );
 
 create table items

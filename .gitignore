@@ -31,4 +31,6 @@ build/
 
 ### VS Code ###
 .vscode/
-request/
+
+### Generated temp reports
+*out*.txt

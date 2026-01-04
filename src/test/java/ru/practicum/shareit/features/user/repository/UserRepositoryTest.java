@@ -2,28 +2,25 @@ package ru.practicum.shareit.features.user.repository;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import ru.practicum.shareit.common.repository.ModelRepositoryTest;
-import ru.practicum.shareit.factory.UserFactory;
+import ru.practicum.shareit.common.repository.ModelRepositoryTestCase;
+import ru.practicum.shareit.factory.user.UserFactory;
 import ru.practicum.shareit.features.user.model.User;
 
 import java.util.List;
 
-@SpringBootTest()
+@SpringBootTest
 @ActiveProfiles("test")
-public class UserRepositoryTest extends ModelRepositoryTest<UserRepository, User> {
-    public UserRepositoryTest(
-            @Autowired
-            UserRepository repository
-    ) {
-        super(
-                repository,
-                new UserFactory(
-                        repository
-                )
-        );
+public class UserRepositoryTest extends ModelRepositoryTestCase<UserRepository, User> {
+    @Override
+    protected UserRepository repository() {
+        return factories().repositories().user();
+    }
+
+    @Override
+    protected UserFactory factory() {
+        return factories().user();
     }
 
     /**
@@ -31,10 +28,10 @@ public class UserRepositoryTest extends ModelRepositoryTest<UserRepository, User
      */
     @Test
     void shouldFindByEmail() {
-        List<User> users = getFactory().createList(5);
+        List<User> users = factory().createList(5);
         User targetUser = users.get(2);
 
-        var fetchedUser = getRepository().findByEmail(targetUser.getEmail());
+        var fetchedUser = repository().findByEmail(targetUser.getEmail());
 
         Assertions.assertTrue(fetchedUser.isPresent());
         Assertions.assertEquals(

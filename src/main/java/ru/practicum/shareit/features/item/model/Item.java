@@ -36,6 +36,7 @@ public class Item implements Model {
     @JoinColumn(name = "owner_id")
     private User owner;
 
-    @Transient
+    @ManyToOne
+    @JoinColumn(name = "request_id")
     private ItemRequest request;
 }

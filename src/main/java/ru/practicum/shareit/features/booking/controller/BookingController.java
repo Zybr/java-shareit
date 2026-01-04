@@ -14,6 +14,7 @@ import ru.practicum.shareit.features.booking.model.Booking;
 import ru.practicum.shareit.features.booking.model.BookingState;
 import ru.practicum.shareit.features.booking.model.BookingStatus;
 import ru.practicum.shareit.features.booking.service.BookingService;
+import ru.practicum.shareit.features.user.service.UserService;
 
 import java.util.List;
 
@@ -21,14 +22,17 @@ import java.util.List;
 @RequestMapping(path = "/bookings")
 public class BookingController {
     private final BookingService service;
+    private final UserService userService;
     private final BookingMapper mapper;
 
     public BookingController(
             BookingMapper mapper,
-            BookingService service
+            BookingService service,
+            UserService userService
     ) {
         this.mapper = mapper;
         this.service = service;
+        this.userService = userService;
     }
 
     @GetMapping("{id}")
@@ -62,7 +66,7 @@ public class BookingController {
             @RequestHeader(CustomHeaders.USER_ID) @Positive Long ownerId,
             @RequestParam("state") @Nullable BookingState state
     ) {
-        service.getOne(ownerId); // Assert existing
+        userService.getOne(ownerId); // Assert existing
 
         return mapper.toOutDto(
                 service.findAllByItemOwner(

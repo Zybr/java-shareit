@@ -11,6 +11,7 @@ import ru.practicum.shareit.common.model.Model;
 @Setter
 @Builder
 @AllArgsConstructor
+@EqualsAndHashCode
 public class User implements Model {
     @Tolerate
     public User() {
