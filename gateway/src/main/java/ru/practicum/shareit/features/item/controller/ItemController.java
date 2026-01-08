@@ -12,6 +12,8 @@ import ru.practicum.shareit.features.item.dto.CreateCommentDto;
 import ru.practicum.shareit.features.item.dto.CreateItemDto;
 import ru.practicum.shareit.features.item.dto.UpdateItemDto;
 
+import java.util.Collections;
+
 @RestController
 @RequestMapping("/items")
 @RequiredArgsConstructor
@@ -38,6 +40,12 @@ public class ItemController {
             @RequestHeader(CustomHeaders.USER_ID) @Positive Long userId,
             @RequestParam("text") String searchText
     ) {
+        if (searchText.trim().isEmpty()) {
+            return ResponseEntity
+                    .ok()
+                    .body(Collections.emptyList());
+        }
+
         return itemClient.searchItems(userId, searchText);
     }
 

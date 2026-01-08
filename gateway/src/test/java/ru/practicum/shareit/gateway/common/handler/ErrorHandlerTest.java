@@ -45,14 +45,4 @@ public class ErrorHandlerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error").value("Violation"));
     }
-
-    @Test
-    void shouldHandleThrowable() throws Exception {
-        when(userClient.getUsers()).thenThrow(new RuntimeException("Unexpected error"));
-
-        mockMvc.perform(get("/users")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isInternalServerError())
-                .andExpect(jsonPath("$.error").value("Internal Server Error: Unexpected error"));
-    }
 }

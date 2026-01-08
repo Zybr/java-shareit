@@ -104,22 +104,9 @@ public class BookingService extends BaseModelService<Booking> {
 
     @Override
     protected void validate(Booking model, Action action) throws RuntimeException {
-        assertValidPeriod(
-                model.getStart(),
-                model.getEnd()
-        );
         assertValidItemId(
                 model.getItem().getId()
         );
-    }
-
-    private void assertValidPeriod(
-            LocalDateTime start,
-            LocalDateTime end
-    ) {
-        if (!start.isBefore(end)) {
-            throw new InvalidDataException("Invalid period of time. Start time must be before end time.");
-        }
     }
 
     private void assertValidItemId(
